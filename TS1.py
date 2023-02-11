@@ -30,9 +30,15 @@ def TS1():
     lssockid, addr = ts1.accept()
     print ("[TS1]: Got a connection request from a client at {}".format(addr))
 
-    data_from_client = lssockid.recv(100)
-    print ("[TS1]: Data from LS: {}".format(data_from_client.decode("UTF-8")))
+    # data_from_client = lssockid.recv(100)
+    # print ("[TS1]: Data from LS: {}".format(data_from_client.decode("UTF-8")))
 
+    while True:
+        data_from_client = lssockid.recv(200)
+        if data_from_client:
+            print("[TS1]: data from client: {}".format(data_from_client.decode("UTF-8")))
+        else:
+            break;
 
 TS1()
 
