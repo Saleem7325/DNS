@@ -1,6 +1,17 @@
 import socket
+import sys
 
 def TS1():
+    if len(sys.argv) < 2:
+        print("[C]: Need to provide ts1ListenPort")
+        exit()
+
+    try:
+        port = int(sys.argv[1])
+    except ValueError:
+        print("[C]: ts1ListenPort must be a numeric value")
+        exit()
+
     try:
         ts1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("[TS1]: Server socket created")
@@ -8,7 +19,7 @@ def TS1():
         print("[TS1]: socket open error: {}\n".format(err))
         exit()
 
-    server_binding = ('', 50007)
+    server_binding = ('', port)
     ts1.bind(server_binding)
     ts1.listen(1)
 
@@ -40,7 +51,7 @@ def TS1():
             if table.has_key(data_from_client):
                 lssockid.send(table[data_from_client].encode("UTF-*"))
         else:
-            break;
+            break
 
 TS1()
 

@@ -1,8 +1,21 @@
 import socket
 import errno
 import select
+import sys
 
 def client():
+    if len(sys.argv) < 3:
+        print("[C]: Need to provide lsHostname and lsListenPort")
+        exit()
+
+    try:
+        port = int(sys.argv[2])
+    except ValueError:
+        print("[C]: lsListenPort must be a numeric value")
+        exit()
+    
+    lsHostName = sys.argv[1]
+
     try:
         cs = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         print("[C]: Client socket created")
@@ -11,37 +24,28 @@ def client():
         exit()
 
     # Define the port on which you want to connect to the server
-    port = 50006
-    localhost_addr = socket.gethostbyname(socket.gethostname())
+    # port = 50006
+    # localhost_addr = socket.gethostbyname(socket.gethostname())
+    lsHostname_addr = socket.gethostbyname(lsHostName)
 
     # connect to the server on local machine
-    server_binding = (localhost_addr, port)
+    # server_binding = (localhost_addr, port)
+    server_binding = (lsHostname_addr, port)
     cs.connect(server_binding)
-    # cs.setblocking(0)
 
-    # Send string to server
-    # msg = "This is a message"
-    # print("[C]: Data sent to server: {}".format(msg))
-    # cs.send(msg.encode('UTF-8'))
 
     f = open("PROJ2-HNS.txt")
+    r = open("RESOLVED.txt", "w")
     lines = f.readlines()
     total = 0
     for line in lines:
         hostname = line.strip()
-        print("[S]: Data send to server: {} ".format(hostname))
+        print("[C]: Data sent to server: {} ".format(hostname))
         cs.send(hostname.encode("UTF-8"))
         data_from_server = cs.recv(100).decode("UTF-8")
-        print("[S]: Data from server: {} ".format(data_from_server))
-        # while len(hostname):
-        #     try:
-        #         sent = cs.send(hostname.encode("UTF-8"))
-        #         total += sent
-        #         hostname = hostname[sent:]
-        #     except socket.error as e:
-        #         if e.errno != errno.EAGAIN:
-        #             raise e
-        #         select.select([], [cs], [])
+        print("[C]: Data from server: {} ".format(data_from_server))
+        r.write(data_from_server + "\n")
+
 
             
         

@@ -1,8 +1,25 @@
 import errno
 import socket
 import select
+import sys
 
 def LS():
+    if len(sys.argv) < 6:
+        print("[S]: Must provide lsListenPort, ts1Hostname, ts1ListenPort, ts2HostName, and ts2ListenPort")
+        exit()
+
+    try:
+        lsListenPort = int(sys.argv[1])
+        ts1ListenPort = int(sys.argv[3])
+        ts2ListenPort = int(sys.argv[5])
+    except ValueError:
+        print("[C]: All listen ports must be a numeric value")
+        exit()
+
+    ts1HostName = sys.argv[2]
+    ts2HostName = sys.argv[4]
+
+
     try:
         ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         ts1 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -13,7 +30,8 @@ def LS():
         exit()
 
     # Bind socket to port 5006 
-    server_binding = ('', 50006)
+    # server_binding = ('', 50006)
+    server_binding = ('', lsListenPort)
     ls.bind(server_binding)
     ls.listen(1)
     # ls.setblocking(0)
@@ -29,24 +47,22 @@ def LS():
     csockid, addr = ls.accept()
     print ("[LS]: Got a connection request from a client at {}".format(addr))
 
-    # Receive data from client
-    # data_from_client = csockid.recv(100)
-    # print ("[LS]: Data from client: {}".format(data_from_client.decode("UTF-8")))
-
     # Send data from client to TS1
     port = 50007
-    localhost_addr = socket.gethostbyname(socket.gethostname())
-    ts1_binding = (localhost_addr, port)
+    # localhost_addr = socket.gethostbyname(socket.gethostname())
+    ts1hostname_addr = socket.gethostbyname(ts1HostName)
+    ts1_binding = (ts1hostname_addr, ts1ListenPort)
+    # ts1_binding = (localhost_addr, port)
     ts1.connect(ts1_binding)
     ts1.setblocking(0)
-    # ts1.send(data_from_client)
 
     # Send data from client to TS1
     port = 50008
-    ts2_binding = (localhost_addr, port)
+    # ts2_binding = (localhost_addr, port)
+    ts2hostname_addr = socket.gethostbyname(ts2HostName)
+    ts2_binding = (ts2hostname_addr, ts2ListenPort)
     ts2.connect(ts2_binding)
     ts2.setblocking(0)
-    # ts2.send(data_from_client)
 
     while True:
         data_from_client = csockid.recv(200).decode("UTF-8")
@@ -84,10 +100,6 @@ def LS():
                 csockid.send(response)
             else:
                 csockid.send((data_from_client + " - TIMED OUT").encode("UTF-8"))
-
-            
-            # ts1.send(data_from_client)
-            # ts2.send(data_from_client)
         else:
             break;
             
