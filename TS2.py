@@ -23,7 +23,7 @@ def TS2():
     f = open("PROJ2-DNSTS2.txt")
     lines = f.readlines()
     for line in lines:
-        hostname = line.split()[0]
+        hostname = line.split()[0].lower()
         table[hostname] = line.strip()
         # print("[TS2]: {}: {}".format(hostname, table[hostname]))
 
@@ -34,9 +34,11 @@ def TS2():
     # print ("[TS2]: Data from LS: {}".format(data_from_client.decode("UTF-8")))
 
     while True:
-        data_from_client = lssockid.recv(200)
+        data_from_client = lssockid.recv(200).decode("UTF-8").lower()
         if data_from_client:
-            print("[TS2]: data from client: {}".format(data_from_client.decode("UTF-8")))
+            print("[TS2]: data from client: {}".format(data_from_client))
+            if table.has_key(data_from_client):
+                lssockid.send(table[data_from_client].encode("UTF-*"))
         else:
             break;
 
