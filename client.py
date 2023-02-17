@@ -23,13 +23,7 @@ def client():
         print('socket open error: {} \n'.format(err))
         exit()
 
-    # Define the port on which you want to connect to the server
-    # port = 50006
-    # localhost_addr = socket.gethostbyname(socket.gethostname())
     lsHostname_addr = socket.gethostbyname(lsHostName)
-
-    # connect to the server on local machine
-    # server_binding = (localhost_addr, port)
     server_binding = (lsHostname_addr, port)
     cs.connect(server_binding)
 
@@ -45,11 +39,5 @@ def client():
         data_from_server = cs.recv(100).decode("UTF-8")
         print("[C]: Data from server: {} ".format(data_from_server))
         r.write(data_from_server + "\n")
-
-
-            
-        
-
-
 
 client()
